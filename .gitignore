@@ -160,8 +160,13 @@ cython_debug/
 #  global gitignore file.
 .idea/
 
-# VSCode
-.vscode/
+# VSCode (manter configurações do projeto)
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
 
 # System files
 .DS_Store

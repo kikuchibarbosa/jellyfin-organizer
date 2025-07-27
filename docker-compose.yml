@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  jellyfin-organizer:
+    build: .
+    container_name: jellyfin-organizer
+    restart: unless-stopped
+    
+    environment:
+      - DOWNLOAD_FOLDER=/downloads
+      - ANIME_FOLDER=/anime
+      - LOG_LEVEL=INFO
+      - USE_SYMLINKS=true
+      - FILE_STABILITY_WAIT=30
+    
+    volumes:
+      # Mapeamento dos diretórios principais
+      - /mnt/samsung/Downloads:/downloads:rw
+      - /mnt/samsung/Shares/Anime:/anime:rw
+      - ./logs:/logs:rw
+      
+      # Configurações personalizadas (opcional)
+      - ./config/custom.conf:/app/config/default.conf:ro
+    
+    networks:
+      - anime-network
+    
+    labels:
+      - "com.docker.compose.project=jellyfin-organizer"
+      - "com.docker.compose.version=2.0.0"
+    
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import os; print('OK' if os.path.exists('/app/src') else 'FAIL')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Opcional: Watchtower para updates automáticos
+  watchtower:
+    image: containrrr/watchtower
+    container_name: jellyfin-organizer-watchtower
+    restart: unless-stopped
+    
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_INCLUDE_STOPPED=true
+      - WATCHTOWER_SCHEDULE=0 0 4 * * * # 4h da manhã
+    
+    networks:
+      - anime-network
+    
+    profiles:
+      - watchtower
+
+networks:
+  anime-network:
+    driver: bridge
+    name: anime-network
+
+# Exemplo de uso:
+# docker-compose up -d                    # Iniciar apenas o organizador
+# docker-compose --profile watchtower up -d  # Iniciar com auto-update

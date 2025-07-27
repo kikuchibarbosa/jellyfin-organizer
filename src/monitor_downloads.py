@@ -109,7 +109,7 @@ class AnimeDownloadHandler(FileSystemEventHandler):
 def main():
     """Função principal do monitor"""
     downloads_dir = "/mnt/samsung/Downloads"
-    organize_script = "/tmp/auto_organize_anime.py"
+    organize_script = "/opt/anime-organizer/auto_organize_anime.py"
     
     # Verificar se diretório existe
     if not os.path.exists(downloads_dir):

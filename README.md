@@ -17,13 +17,16 @@ Sistema automatizado para organização de downloads de animes, com integração
 ## 🚀 Instalação Rápida
 
 ```bash
-# Clonar ou baixar os arquivos
-git clone <repositório> jellyfin-organizer
+# Clonar repositório
+git clone https://github.com/kikuchibarbosa/jellyfin-organizer.git
 cd jellyfin-organizer
 
-# Executar instalador
-chmod +x install.sh
-./install.sh
+# Instalar com Makefile (recomendado)
+make deploy
+
+# OU usar instalador tradicional
+chmod +x tools/install.sh
+./tools/install.sh
 ```
 
 ## 📁 Estrutura Final
@@ -73,18 +76,25 @@ Nome do Anime - 12.mkv
 
 ## 🔧 Comandos de Gerenciamento
 
+### Com Makefile (Recomendado)
 ```bash
-# Organizar arquivos existentes
-organize-anime organize
+make help          # Ver todos os comandos disponíveis
+make deploy        # Instalar e iniciar sistema
+make start         # Iniciar serviço
+make stop          # Parar serviço
+make restart       # Reiniciar serviço
+make status        # Ver status
+make logs          # Ver logs em tempo real
+make test          # Executar testes
+make uninstall     # Desinstalar sistema
+```
 
-# Controle do serviço
-organize-anime start     # Iniciar monitor
-organize-anime stop      # Parar monitor
-organize-anime restart   # Reiniciar monitor
-organize-anime status    # Ver status
+### Com CLI Tradicional
+```bash
+organize-anime organize  # Organizar arquivos existentes
+organize-anime status    # Ver status do serviço
 organize-anime logs      # Ver logs em tempo real
-organize-anime enable    # Habilitar início automático
-organize-anime disable   # Desabilitar início automático
+organize-anime restart   # Reiniciar serviço
 ```
 
 ## ⚙️ Configuração do qBittorrent
@@ -229,6 +239,21 @@ Este projeto é distribuído sob a licença MIT. Veja o arquivo LICENSE para mai
 
 Contribuições são bem-vindas! Por favor:
 
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature
+3. Commite suas mudanças
+4. Faça um push para a branch
+5. Abra um Pull Request
+
+## 📞 Suporte
+
+Para suporte, abra uma issue no repositório ou entre em contato através dos canais oficiais.
+
+---
+
+**Última atualização:** 27/07/2025  
+**Versão:** 2.0.0  
+**Status:** ✅ Estável e em produção
 1. Faça um fork do projeto
 2. Crie uma branch para sua feature
 3. Commite suas mudanças
