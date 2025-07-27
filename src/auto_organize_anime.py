@@ -24,6 +24,9 @@ def extract_anime_info(filename):
     # Remove extensão
     name = re.sub(r'\.(mkv|mp4|avi)$', '', filename, flags=re.IGNORECASE)
     
+    # Remove versões (v2, v3, etc.) para processamento
+    name = re.sub(r'v\d+', '', name, flags=re.IGNORECASE)
+    
     # Padrão 1: Nome - SxxExx (já está correto)
     pattern1 = r'^(.+?)\s*-\s*S(\d+)E(\d+)$'
     match1 = re.match(pattern1, name)
@@ -80,7 +83,9 @@ def extract_anime_info(filename):
     
     # Padrão 4: Nome XX (sem traço)
     pattern4 = r'^(.+?)\s+(\d+(?:\.\d+)?)\s*(?:\(.*?\))?$'
-# Padrão 4a: Nome SXXEXX
+    match4 = re.match(pattern4, name)
+    
+    # Padrão 4a: Nome SXXEXX
     pattern4a = r'^(.+?)\s*S(\d+)E(\d+(?:\.\d+)?)(?:\s*\(.*?\))?$'
     match4a = re.match(pattern4a, name)
     if match4a:
@@ -97,6 +102,7 @@ def extract_anime_info(filename):
         season = int(match4b.group(2))
         episode = match4b.group(3)
         return anime_name, season, episode
+    
     if match4:
         anime_name = match4.group(1).strip()
         episode = match4.group(2)
@@ -174,13 +180,24 @@ def organize_single_file(source_file, downloads_dir, shares_dir):
     else:
         episode_str = f"{int(float(episode)):02d}"
     
-    # Nome do arquivo final
+    # Nome do arquivo final (sem versão)
     new_filename = f"{anime_name} - S{season:02d}E{episode_str}{source_path.suffix}"
     target_file = season_dir / new_filename
     
-    # Criar link simbólico
+    # Verificar se é uma versão corrigida (v2, v3, etc.)
+    is_version_corrected = re.search(r'v\d+', filename, re.IGNORECASE)
+    
+    # Se for uma versão corrigida, informar na mensagem
+    if is_version_corrected:
+        version_info = is_version_corrected.group()
+        log_message(f"🔄 Versão corrigida detectada ({version_info})")
+    
+    # Criar link simbólico (isso automaticamente substitui o arquivo anterior)
     if create_symlink(source_path, target_file):
-        log_message(f"✅ {anime_name} - E{episode_str}")
+        if is_version_corrected:
+            log_message(f"✅ {anime_name} - E{episode_str} (atualizado)")
+        else:
+            log_message(f"✅ {anime_name} - E{episode_str}")
         log_message(f"   {filename} → {new_filename}")
         return True
     else:
@@ -219,8 +236,8 @@ def main():
         print("  python3 auto_organize_anime.py <arquivo>   # Organiza arquivo específico")
         sys.exit(1)
     
-    downloads_dir = "/mnt/samsung/Downloads"
-    shares_dir = "/mnt/samsung/Shares"
+    downloads_dir = "/mnt/mini_nfs/Downloads"
+    shares_dir = "/mnt/mini_nfs/Shares"
     
     if sys.argv[1] == "organize":
         organize_existing_files(downloads_dir, shares_dir)
