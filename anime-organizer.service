@@ -1,0 +1,17 @@
+[Unit]
+Description=Anime Download Organizer
+After=network.target
+
+[Service]
+Type=simple
+User=kikuchi
+Group=kikuchi
+WorkingDirectory=/opt/anime-organizer
+ExecStart=/usr/bin/python3 /opt/anime-organizer/monitor_downloads.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
